@@ -1,4 +1,4 @@
-﻿extrn GetUserNameA      : proc,
+extrn GetUserNameA      : proc,
       GetComputerNameA  : proc,
       GetTempPathA      : proc,
       wsprintfA         : proc,
@@ -9,14 +9,14 @@
 ;   Удобно ввести следующие макрозамены (с помощью директивы equ или =):
     szMAX_COMP_NAME equ 16
     szUNLEN         equ 257
-    szMAX_PATH      equ 26
+    szMAX_PATH      equ 261
 
 .data
 
 
 ;   Введите следующие глобальные переменные (заголовок окна и строка форматирования):	
     
-    cap db '<заголовок окна>',       0
+    cap db 'PC INFO',       0
 
     fmt db 'Username: %s',           0Ah,   ; 0Ah = \n in ASCII TABLE
            'Computer name: %s',      0Ah,
@@ -86,8 +86,8 @@ Start proc
     lea RDX, fmt        ;  в RDX занесем адрес строки форматирования fmt
     lea R8, _username   ;  в регистры R8 и R9 поместим адреса _username и
     lea R9, _compname   ;  _compname соответственно
-    ;lea RAX, _temppath  ;  поместим оставшиеся     ; error is kinda here
-    ;push RAX            ;  аргументы в стек
+    lea RAX, _temppath  ;  поместим оставшиеся     ; error is kinda here
+    mov [RSP + 32], RAX            ;  аргументы в стек
     call wsprintfA      ;  вызовем wsprintfA.
 
 ;   6.  Отображение полученной информации в диалоговом окне
