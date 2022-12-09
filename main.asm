@@ -9,6 +9,7 @@ extrn GetUserNameA      : proc,
 ;   Структура OSVERSIONINFO
 ;   Для получения информации о версии ОС необходимо ввести следующую структуру:
 
+<<<<<<< Updated upstream
 OSVERSIONINFO struct
    dwOSVersionInfoSize dword ?
    dwMajorVersion      dword ?
@@ -18,6 +19,8 @@ OSVERSIONINFO struct
    szCSDVersion        byte 128 dup(?)
 OSVERSIONINFO ends
 
+=======
+>>>>>>> Stashed changes
 ;   Удобно ввести следующие макрозамены (с помощью директивы equ или =):
     szMAX_COMP_NAME equ 16
     szUNLEN         equ 257
@@ -28,7 +31,11 @@ OSVERSIONINFO ends
 
 ;   Введите следующие глобальные переменные (заголовок окна и строка форматирования):	
     
+<<<<<<< Updated upstream
     cap db '<заголовок окна>',       0
+=======
+    cap db 'Computer INFO',          0
+>>>>>>> Stashed changes
 
     fmt db 'Username: %s',           0Ah,   ; 0Ah = \n in ASCII TABLE
            'Computer name: %s',      0Ah,
@@ -52,7 +59,10 @@ Start proc
       _username[szUNLEN]            :byte, ; имя пользователя
       _compname[szMAX_COMP_NAME]    :byte, ; название компьютера
       _temppath[szMAX_PATH]         :byte, ; путь до директории временных файлов
+<<<<<<< Updated upstream
       _v                            :OSVERSIONINFO,
+=======
+>>>>>>> Stashed changes
       _size                         :dword
 
 ;   В переменной _msg будет храниться результирующая строка размером до 1024 байт. 
@@ -60,8 +70,16 @@ Start proc
 ;   _username[szUNLEN], 
 ;   _compname[szMAX_COMP_NAME], 
 ;   _temppath[szMAX_PATH] 
+<<<<<<< Updated upstream
 ;   нужны для хранения имени пользователя, названия компьютера и пути до директории временных файлов соответственно. 
 ;   Также для получения данных о системе нам потребуется локальный экземпляр структуры OSVERSIONINFO. Назовем его _v. 
+=======
+;   нужны для хранения 
+;   имени пользователя, 
+;   названия компьютера
+;   и пути до директории временных файлов
+;   соответственно. 
+>>>>>>> Stashed changes
 ;   Последняя переменная, которую необходимо объявить, - это _size размера dword. 
 ;   Эта переменная необходима для передачи размера строк в функции 
 ;   (так как размер требуется передать по указателю, макрозамены для передачи мы использовать не можем).    
@@ -77,6 +95,7 @@ Start proc
 ;   3.  Получение имени пользователя, названия компьютера и пути до директории временных файлов
 ;   Для того чтобы получить имя пользователя, выполним следующие действия:
 
+<<<<<<< Updated upstream
 
     mov _size, szUNLEN  ; поместим в переменную _size значение размера строки имени пользователя (szUNLEN)
     lea RCX, _username        ; загрузим АДРЕС строки и УКАЗАТЕЛЬ на ее размер в регистры RCX  
@@ -133,6 +152,35 @@ Start proc
     lea RAX, _temppath
     push RAX
     call wsprintfA      ;  вызовем wsprintfA.
+=======
+    mov _size, szUNLEN          ; поместим в переменную _size значение размера строки имени пользователя (szUNLEN)
+    lea RCX, _username          ; загрузим АДРЕС строки и УКАЗАТЕЛЬ на ее размер в регистры RCX  
+    lea RDX, _size              ; и RDX соответственно
+    call GetUserNameA           ; вызовем функцию GetUserNameA
+
+;   Для того чтобы получить название компьютера, выполним следующие действия:
+    mov _size, szMAX_COMP_NAME   ; поместим в переменную _size значение размера строки названия компьютера (szMAX_COMP_NAME)
+    lea RCX, _compname           ; загрузим АДРЕС строки в регистр RCX  
+    lea RDX, _size               ; и УКАЗАТЕЛЬ на ее размер в регистр RDX
+    call GetComputerNameA        ; вызовем функцию GetComputerNameA
+
+;   Для того чтобы получить путь до директории временных файлов, выполним следующие действия:
+    mov _size, szMAX_PATH       ; поместим в переменную _size значение размера строки пути до директории временных файлов (szMAX_PATH)
+    lea RCX, _size              ; и УКАЗАТЕЛЬ на ее размер в регистр RCX
+    lea RDX, _temppath          ; загрузим АДРЕС строки в регистр RDX  
+    call GetTempPathA           ; вызовем функцию GetTempPathA
+
+;   5.  Формирование отформатированной строки
+;   Сформируем строку _msg с помощью функции wsprintfA:
+    lea RCX, _msg           ;  поместим в регистр RCX адрес строки _msg
+    lea RDX, fmt            ;  в RDX занесем адрес строки форматирования fmt
+    lea R8, _username       ;  в регистры R8 и R9 поместим адреса _username и
+    lea R9, _compname       ;  _compname соответственно
+    lea RAX, _temppath      ;  поместим оставшиеся     ; error is kinda here
+    mov [RSP + 32], RAX     ;  аргументы в стек
+    
+    call wsprintfA          ;  вызовем wsprintfA.
+>>>>>>> Stashed changes
 
 ;   6.  Отображение полученной информации в диалоговом окне
 ;   Выведем полученную строку с помощью MessageBoxA:
