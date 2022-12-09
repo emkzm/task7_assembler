@@ -19,7 +19,4 @@
       <Filter>Исходные файлы</Filter>
     </MASM>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-  </ItemGroup>
 </Project>
