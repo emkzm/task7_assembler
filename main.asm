@@ -145,8 +145,7 @@ Start proc
 ;   7.  Завершение работы процесса
 ;   Выполним следующие действия:
 
-;    xor RCX, RCX     ;    обнулим RCX
-;    mov RCX, 0
+    xor RCX, RCX     ;    обнулим RCX
     call ExitProcess ;    вызовем ExitProcess
 
 Start endp
