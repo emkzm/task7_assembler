@@ -30,7 +30,7 @@ OSVERSIONINFO ends
     
     cap db '<заголовок окна>',       0
 
-    fmt db 'Username: %s',           0Ah,
+    fmt db 'Username: %s',           0Ah,   ; 0Ah = \n in ASCII TABLE
            'Computer name: %s',      0Ah,
            'TMP Path: %s',           0Ah,
            'OS version: %d.%d.%d',   0
@@ -79,7 +79,7 @@ Start proc
 
 
     mov _size, szUNLEN  ; поместим в переменную _size значение размера строки имени пользователя (szUNLEN)
-    lea RCX, fmt        ; загрузим АДРЕС строки и УКАЗАТЕЛЬ на ее размер в регистры RCX  
+    lea RCX, _username        ; загрузим АДРЕС строки и УКАЗАТЕЛЬ на ее размер в регистры RCX  
     lea RDX, _size      ; и RDX соответственно
     call GetUserNameA   ; вызовем функцию GetUserNameA
 
@@ -89,6 +89,20 @@ Start proc
 ;  
 ;   Работа с ними осуществляется аналогично, за исключением того, что для последней функции порядок меняется: 
 ;   сначала передается указатель на размер, а затем адрес строки.
+
+    mov _size, szMAX_COMP_NAME  ; поместим в переменную _size значение размера строки имени пользователя (szUNLEN)
+    lea RCX, _compname        ; загрузим АДРЕС строки в регистр RCX  
+    lea RDX, _size      ; и УКАЗАТЕЛЬ на ее размер в регистр RDX
+    call GetComputerNameA   ; вызовем функцию GetComputerNameA
+
+;   " за исключением того, что для последней функции порядок меняется: 
+;           сначала передается указатель на размер, а затем адрес строки."
+
+    mov _size, szMAX_COMP_NAME  ; поместим в переменную _size значение размера строки имени пользователя (szUNLEN)
+    lea RCX, _size      ; и УКАЗАТЕЛЬ на ее размер в регистр RCX
+    lea RDX, _temppath        ; загрузим АДРЕС строки в регистр RDX  
+    call GetTempPathA   ; вызовем функцию GetTempPathA
+
 ;
 ;   4.  Получение сведений о системе
 ;   В первую очередь нужно очистить экземпляр структуры OSVERSIONINFO:
@@ -96,7 +110,7 @@ Start proc
     xor AL,AL               ;   очистим регистр AL
     mov RCX, size _v        ;   занесем в регистр RCX размер экземпляра _v (mov RCX, size _v)
     lea RDI, _v             ;   загрузить в RDI адрес _v
-    rep stos byte ptr [RDI] ;   применим stos для всех полей структуры (rep stos byte ptr [RDI]).
+    rep stosb [RDI]         ;   применим stos для всех полей структуры (rep stos byte ptr [RDI]) = (rep stosb [RDI]).
 
 ;   The STOS instruction copies the data item from AL (for bytes - STOSB), AX (for words - STOSW)
 ;   or EAX (for doublewords - STOSD) to the destination string, pointed to by ES:DI in memory.
@@ -114,9 +128,9 @@ Start proc
     lea RDX, fmt        ;  в RDX занесем адрес строки форматирования fmt
     lea R8, _username   ;  в регистры R8 и R9 поместим адреса _username и
     lea R9, _compname   ;  _compname соответственно
-    lea RAX, _temppath  ;  поместим оставшиеся
+    lea RAX, _v  ;  поместим оставшиеся
     push RAX            ;  аргументы в стек
-    lea RAX, _v
+    lea RAX, _temppath
     push RAX
     call wsprintfA      ;  вызовем wsprintfA.
 
